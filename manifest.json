@@ -1,0 +1,51 @@
+{
+  "manifest_version": 3,
+  "name": "Web Annotator Lite",
+  "version": "1.0.0",
+  "description": "Highlight text and links on web pages with local IndexedDB storage.",
+  "permissions": ["contextMenus", "activeTab", "tabs", "sidePanel", "storage"],
+  "host_permissions": ["http://*/*", "https://*/*"],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "side_panel": {
+    "default_path": "sidepanel.html"
+  },
+  "action": {
+    "default_title": "Web Annotator Lite",
+    "default_icon": {
+      "16": "icon16.png",
+      "48": "icon48.png",
+      "128": "icon128.png"
+    }
+  },
+  "icons": {
+    "16": "icon16.png",
+    "48": "icon48.png",
+    "128": "icon128.png"
+  },
+  "content_scripts": [
+    {
+      "matches": ["http://*/*", "https://*/*"],
+      "js": ["utils.js", "content.js"],
+      "css": ["content.css"],
+      "run_at": "document_idle"
+    }
+  ],
+  "commands": {
+    "web-annotator-add-note-command": {
+      "suggested_key": {
+        "default": "Alt+S",
+        "mac": "Alt+S"
+      },
+      "description": "Add highlight mark"
+    },
+    "toggle-side-panel": {
+      "suggested_key": {
+        "default": "Alt+W",
+        "mac": "Alt+W"
+      },
+      "description": "Open side panel"
+    }
+  }
+}

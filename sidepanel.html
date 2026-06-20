@@ -1,0 +1,215 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Web Annotator Lite</title>
+    <link rel="stylesheet" href="sidepanel.css">
+  </head>
+  <body>
+
+    <!-- 分段导航 -->
+    <nav class="sp-nav">
+      <div class="seg" id="nav-seg">
+        <div class="seg-slider"></div>
+        <button class="seg-btn active" type="button" data-page="marks">标注</button>
+        <button class="seg-btn" type="button" data-page="style">样式</button>
+        <button class="seg-btn" type="button" data-page="settings">设置</button>
+      </div>
+    </nav>
+
+    <!-- 当前页面主机栏 -->
+    <div class="sp-host">
+      <span class="host-dot"></span>
+      <span id="current-page">All annotations</span>
+    </div>
+
+    <main class="sp-main">
+
+      <!-- ==================== 标注页 ==================== -->
+      <section id="page-marks" class="sp-page active">
+        <div class="sp-search">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="6.5" cy="6.5" r="5"/><line x1="10.5" y1="10.5" x2="14" y2="14"/></svg>
+          <input id="search" type="text" placeholder="搜索文字、备注、标题或 URL">
+        </div>
+        <div id="tag-filters" class="sp-filters"></div>
+        <div class="sp-count" id="mark-count"><b>0</b> marks</div>
+        <div id="marks" class="sp-marks"></div>
+      </section>
+
+      <!-- ==================== 样式页 ==================== -->
+      <section id="page-style" class="sp-page">
+        <!-- 默认高亮 -->
+        <div class="s-card">
+          <div class="s-title">默认高亮</div>
+          <div class="s-desc">新建标注时使用的颜色和线型</div>
+          <div id="color-grid" class="color-grid"></div>
+          <div class="style-row">
+            <div id="style-options" class="style-options">
+              <button type="button" data-style="background">高亮</button>
+              <button type="button" data-style="underline">下划线</button>
+              <button type="button" data-style="underline-wavy">波浪线</button>
+              <button type="button" data-style="line-through">删除线</button>
+            </div>
+          </div>
+          <div class="color-actions">
+            <button id="pick-color" type="button">颜色选取</button>
+            <button id="toggle-delete-colors" type="button" class="btn-danger">删除</button>
+          </div>
+          <p class="hint-text">点击色块设为默认，+ 可添加新颜色，"颜色选取"替换当前默认色。</p>
+        </div>
+
+        <!-- 标签库 -->
+        <div class="s-card">
+          <div class="s-title">标签库</div>
+          <div class="s-desc">创建常用标签，标注卡片里可直接使用</div>
+          <div class="tag-create">
+            <input id="tag-name" type="text" placeholder="例如：论文、资料、待读">
+            <button id="create-tag" type="button">创建</button>
+            <button id="toggle-delete-tags" type="button" class="btn-danger">删除</button>
+          </div>
+          <div id="tag-library" class="tag-library"></div>
+        </div>
+
+        <!-- 网站分类 -->
+        <div class="s-card">
+          <div class="s-title">网站分类</div>
+          <div class="s-desc">为常用网站添加备注，方便管理标注</div>
+          <div id="site-list" class="site-list"></div>
+        </div>
+      </section>
+
+      <!-- ==================== 设置页 ==================== -->
+      <section id="page-settings" class="sp-page">
+        <!-- 数据概览 -->
+        <div class="s-card">
+          <div class="s-title">数据概览</div>
+          <div class="s-desc">全部数据保存在浏览器本地 IndexedDB</div>
+          <div class="stats-grid">
+            <div><strong id="stats-marks">0</strong><span>标注</span></div>
+            <div><strong id="stats-tags">0</strong><span>标签</span></div>
+            <div><strong id="stats-colors">0</strong><span>颜色</span></div>
+          </div>
+        </div>
+
+        <!-- 外观设置（整合方案、主题、字体） -->
+        <div class="s-card">
+          <div class="collapse-header open" data-collapse="appearance">
+            <span class="collapse-arrow">&#9654;</span>
+            <span class="s-title">外观设置</span>
+          </div>
+          <div class="collapse-body open" id="appearance-body">
+            <!-- 卡片风格 -->
+            <div class="setting-section">
+              <div class="setting-label">卡片风格</div>
+              <div class="card-style-grid" id="card-style-options">
+                <div class="card-style-opt active" data-card-style="a">
+                  <div class="card-prev">
+                    <div class="card-prev-a">
+                      <span class="prev-dot"></span>
+                      <div class="prev-lines">
+                        <span class="prev-line w1"></span>
+                        <span class="prev-line w2"></span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="card-style-name">流光</div>
+                </div>
+                <div class="card-style-opt" data-card-style="b">
+                  <div class="card-prev">
+                    <div class="card-prev-b">
+                      <span class="prev-dot"></span>
+                      <div class="prev-lines">
+                        <span class="prev-line w2"></span>
+                        <span class="prev-line w3"></span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="card-style-name">素笺</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 主题切换 -->
+            <div class="setting-section">
+              <div class="setting-row">
+                <span class="setting-label">深色主题</span>
+                <label class="theme-switch">
+                  <input type="checkbox" id="dark-mode-toggle">
+                  <span class="theme-slider"></span>
+                </label>
+              </div>
+            </div>
+
+            <!-- 字体选择 -->
+            <div class="setting-section">
+              <div class="setting-label">字体</div>
+              <div class="font-options" id="font-options">
+                <button type="button" class="font-opt active" data-font="default">
+                  <span class="font-preview" style="font-family: inherit;">默认</span>
+                </button>
+                <button type="button" class="font-opt" data-font="serif">
+                  <span class="font-preview" style="font-family: 'Georgia', 'Noto Serif SC', serif;">衬线</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 导入导出 -->
+        <div class="s-card">
+          <div class="s-title">导入导出</div>
+          <div class="s-desc">导出 JSON 备份，或从备份恢复数据</div>
+          <div class="io-row">
+            <button id="export" type="button" class="btn-outline">导出数据</button>
+            <label class="btn-outline file-label">导入数据<input id="import" type="file" accept="application/json"></label>
+          </div>
+        </div>
+
+        <!-- 快捷键 -->
+        <div class="s-card">
+          <div class="s-title">快捷键</div>
+          <div class="s-desc">点击输入框后按下组合键即可修改</div>
+          <div class="shortcut-list">
+            <label><span>添加高亮</span><input id="shortcut-highlight" type="text" readonly></label>
+            <label><span>打开侧栏</span><input id="shortcut-panel" type="text" readonly></label>
+            <label><span>跳转备注</span><input id="shortcut-note" type="text" readonly></label>
+          </div>
+        </div>
+
+        <!-- 关于 -->
+        <div class="s-card">
+          <div class="s-title">关于</div>
+          <div class="s-desc">轻量网页标注工具</div>
+          <p class="about-text">选中文字后用浮动工具栏、右键菜单或 <b>Alt+S</b> 创建高亮。侧栏管理笔记、标签和数据。所有标注存储在浏览器本地 IndexedDB。</p>
+          <p class="about-contact">如有问题或建议，请联系：<a href="mailto:3193095702@qq.com">3193095702@qq.com</a></p>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- 标注卡片模板 -->
+    <template id="mark-template">
+      <article class="mark-card">
+        <div class="b-inner">
+          <div class="mark-topline">
+            <span class="mark-color"></span>
+            <span class="mark-type"></span>
+            <button class="favorite" type="button"></button>
+          </div>
+          <blockquote class="mark-text"></blockquote>
+          <textarea class="mark-description" rows="2" placeholder="请输入文字批注"></textarea>
+          <div class="mark-meta"></div>
+          <div class="mark-tags"></div>
+          <div class="mark-controls">
+            <div class="mark-tag-picker"></div>
+            <button class="delete" type="button">删除</button>
+          </div>
+        </div>
+      </article>
+    </template>
+
+    <script src="utils.js"></script>
+    <script src="sidepanel.js"></script>
+  </body>
+</html>
