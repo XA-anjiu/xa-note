@@ -1,0 +1,5 @@
+﻿# 本地数据导出（含个人标注内容，勿提交）
+backup/
+*.export.json
+node_modules/
+.DS_Store

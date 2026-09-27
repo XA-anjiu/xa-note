@@ -187,7 +187,8 @@ async function getShortcuts() {
   return saved.shortcuts || {
     addHighlight: "Alt+S",
     openPanel: "Alt+W",
-    jumpToNote: "Alt+N"
+    jumpToNote: "Alt+N",
+    deleteHighlight: "Alt+X"
   };
 }
 
@@ -197,13 +198,16 @@ function sendMessageToTab(tabId, message) {
 
 function notifyDataUpdated(sourceTabId, url) {
   chrome.runtime.sendMessage({ type: "DATA_UPDATED_FR", url }, () => void chrome.runtime.lastError);
-  broadcastToTabs({ type: "SHOW_ALL_HIGHLIGHTS_CS" }, sourceTabId);
+  // 只有同一 URL 的标签页需要重绘高亮；无条件群发会让无关页面反复重建 DOM
+  broadcastToTabs({ type: "SHOW_ALL_HIGHLIGHTS_CS" }, sourceTabId, url);
 }
 
-function broadcastToTabs(message, sourceTabId) {
+function broadcastToTabs(message, sourceTabId, onlyUrl) {
   chrome.tabs.query({ url: ["http://*/*", "https://*/*"] }, tabs => {
     tabs.forEach(tab => {
-      if (tab.id && tab.id !== sourceTabId) sendMessageToTab(tab.id, message);
+      if (!tab.id || tab.id === sourceTabId) return;
+      if (onlyUrl && WAUtils.normalizeUrl(tab.url || "") !== onlyUrl) return;
+      sendMessageToTab(tab.id, message);
     });
   });
 }

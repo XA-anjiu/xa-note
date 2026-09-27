@@ -13,6 +13,7 @@
       <div class="seg" id="nav-seg">
         <div class="seg-slider"></div>
         <button class="seg-btn active" type="button" data-page="marks">标注</button>
+        <button class="seg-btn" type="button" data-page="words">词表</button>
         <button class="seg-btn" type="button" data-page="style">样式</button>
         <button class="seg-btn" type="button" data-page="settings">设置</button>
       </div>
@@ -35,6 +36,38 @@
         <div id="tag-filters" class="sp-filters"></div>
         <div class="sp-count" id="mark-count"><b>0</b> marks</div>
         <div id="marks" class="sp-marks"></div>
+      </section>
+
+      <!-- ==================== 词表页 ==================== -->
+      <section id="page-words" class="sp-page">
+        <div class="sp-search">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="6.5" cy="6.5" r="5"/><line x1="10.5" y1="10.5" x2="14" y2="14"/></svg>
+          <input id="word-search" type="text" placeholder="搜索单词、释义、标签或出处">
+        </div>
+        <div class="s-card">
+          <div class="setting-row">
+            <span class="setting-label">只看单词与词组</span>
+            <label class="theme-switch">
+              <input type="checkbox" id="word-only" checked>
+              <span class="theme-slider"></span>
+            </label>
+          </div>
+          <div class="s-desc">过滤掉单个字母、纯数字与整句；关掉可查看全部标注</div>
+          <div class="setting-row">
+            <span class="setting-label">合并词形变化</span>
+            <label class="theme-switch">
+              <input type="checkbox" id="word-merge-forms">
+              <span class="theme-slider"></span>
+            </label>
+          </div>
+          <div class="s-desc">把 attributes / attributed / profoundly 这类屈折形式并到同一条词目</div>
+          <div class="io-row">
+            <button id="export-words" type="button" class="btn-outline">导出词表 (Anki)</button>
+            <button id="copy-words" type="button" class="btn-outline">复制词表</button>
+          </div>
+        </div>
+        <div class="sp-count" id="word-count"><b>0</b> words</div>
+        <div id="word-list" class="wa-word-list"></div>
       </section>
 
       <!-- ==================== 样式页 ==================== -->
@@ -141,6 +174,12 @@
               </div>
             </div>
 
+            <!-- 主题色 -->
+            <div class="setting-section">
+              <div class="setting-label">主题色</div>
+              <div class="accent-options" id="accent-options"></div>
+            </div>
+
             <!-- 字体选择 -->
             <div class="setting-section">
               <div class="setting-label">字体</div>
@@ -153,15 +192,34 @@
                 </button>
               </div>
             </div>
+
+            <!-- 高亮文字颜色 -->
+            <div class="setting-section">
+              <div class="setting-label">高亮文字颜色</div>
+              <div class="font-options" id="text-color-options">
+                <button type="button" class="font-opt active" data-text-color="original">
+                  <span class="font-preview">保持原色</span>
+                </button>
+                <button type="button" class="font-opt" data-text-color="black">
+                  <span class="font-preview">固定黑色</span>
+                </button>
+                <button type="button" class="font-opt" data-text-color="auto">
+                  <span class="font-preview">自动对比</span>
+                </button>
+              </div>
+              <div class="s-desc">保持原色＝不改动网页文字颜色；自动对比＝按底色取黑/白（旧版行为）</div>
+            </div>
           </div>
         </div>
 
         <!-- 导入导出 -->
         <div class="s-card">
           <div class="s-title">导入导出</div>
-          <div class="s-desc">导出 JSON 备份，或从备份恢复数据</div>
+          <div class="s-desc">导出 JSON 备份、CSV 表格或打印保存 PDF</div>
           <div class="io-row">
-            <button id="export" type="button" class="btn-outline">导出数据</button>
+            <button id="export" type="button" class="btn-outline">导出 JSON</button>
+            <button id="export-csv" type="button" class="btn-outline">导出 CSV</button>
+            <button id="export-pdf" type="button" class="btn-outline">导出 PDF</button>
             <label class="btn-outline file-label">导入数据<input id="import" type="file" accept="application/json"></label>
           </div>
         </div>
@@ -169,12 +227,11 @@
         <!-- 快捷键 -->
         <div class="s-card">
           <div class="s-title">快捷键</div>
-          <div class="s-desc">点击输入框后按下组合键即可修改</div>
-          <div class="shortcut-list">
-            <label><span>添加高亮</span><input id="shortcut-highlight" type="text" readonly></label>
-            <label><span>打开侧栏</span><input id="shortcut-panel" type="text" readonly></label>
-            <label><span>跳转备注</span><input id="shortcut-note" type="text" readonly></label>
-          </div>
+          <div class="s-desc">集中管理高亮、侧栏、备注跳转和删除快捷键</div>
+          <button id="shortcut-open" type="button" class="shortcut-entry">
+            <span>快捷键设置</span>
+            <em id="shortcut-summary">Alt+S · Alt+W · Alt+N · Alt+X</em>
+          </button>
         </div>
 
         <!-- 关于 -->

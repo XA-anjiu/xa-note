@@ -52,6 +52,40 @@
   z-index: 1999999999;
 }
 
+#web-annotator-acts-node .wa-quick-tags {
+  align-items: center;
+  display: flex;
+  gap: 4px;
+  padding: 0 2px;
+}
+
+/* 快捷标签：文字胶囊，沿用操作条的配色与圆角语言 */
+#web-annotator-acts-node button.wa-quick-tag {
+  background: rgba(0, 0, 0, 0.045);
+  border-radius: 999px;
+  color: #555;
+  display: inline-flex;
+  font-size: 11.5px;
+  font-weight: 600;
+  height: 22px;
+  max-width: 92px;
+  overflow: hidden;
+  padding: 0 9px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  width: auto;
+}
+
+#web-annotator-acts-node button.wa-quick-tag:hover {
+  background: rgba(0, 0, 0, 0.09);
+  color: #111;
+}
+
+#web-annotator-acts-node button.wa-quick-tag.active {
+  background: var(--wa-theme-accent, #2dd4bf);
+  color: var(--wa-theme-accent-text, #06302c);
+}
+
 #web-annotator-acts-node .wa-acts-sep {
   width: 1px;
   height: 16px;
@@ -104,7 +138,7 @@
 }
 
 #web-annotator-acts-node button[data-action="favorite"] {
-  color: #ccc;
+  color: #555;
 }
 
 #web-annotator-acts-node button[data-action="favorite"].active {
@@ -120,6 +154,8 @@
   display: block;
   width: 14px;
   height: 14px;
+  border-radius: 999px;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.08), 0 0 0 2px rgba(255, 255, 255, 0.72);
 }
 
 #web-annotator-enhanced-picker {
@@ -167,8 +203,8 @@
 }
 
 #web-annotator-style-picker button.active {
-  background: #2dd4bf;
-  color: #fff;
+  background: var(--wa-theme-accent, #2dd4bf);
+  color: var(--wa-theme-accent-text, #000);
 }
 
 #web-annotator-note-details {
@@ -190,7 +226,7 @@
   pointer-events: none;
   position: fixed;
   transform: translate(-50%, 20px);
-  transition: opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1), transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  /* 出现/消失直接切换：用户要求取消这张卡的淡入淡出与位移动效 */
   width: 380px;
   z-index: 999999;
 }
@@ -439,13 +475,13 @@
 }
 
 #web-annotator-rail button[data-action="style"] {
-  background: #2dd4bf;
+  background: var(--wa-theme-accent, #2dd4bf);
   color: #444;
 }
 
 #web-annotator-rail button[data-action="style"]:hover {
-  background: #14b8a6;
-  color: #fff;
+  background: color-mix(in srgb, var(--wa-theme-accent, #2dd4bf) 82%, #000);
+  color: var(--wa-theme-accent-text, #000);
 }
 
 #web-annotator-rail button[data-action="sync"] {
@@ -580,7 +616,7 @@
 #web-annotator-note-details[data-card-style="b"] .wa-details-highlight::before {
   content: '';
   position: absolute;
-  left: 0; top: 2px;
+  left: 0; top: 0;
   width: 20px;
   height: 20px;
   background-color: var(--mark-color, #2dd4bf);
@@ -596,7 +632,7 @@
 #web-annotator-note-details[data-card-style="b"] .wa-details-highlight::after {
   content: '';
   position: absolute;
-  left: 6px; top: 8px;
+  left: 6px; top: 6px;
   width: 8px;
   height: 8px;
   border-radius: 50%;
@@ -744,6 +780,138 @@
 }
 
 /* ================================================================
+   本页大面板：用 iframe 装载侧边栏页面（悬浮栏第二个按钮触发）
+
+   外层是铺满视口的透明层：它不铺底色（网页仍然可读），但会接收指针与
+   滚轮事件——点空白只关面板，不会顺手点中网页里的链接，网页也不会在
+   面板开着的时候乱滚。卡片才是看得见的那一部分。
+   ================================================================ */
+#web-annotator-page-panel {
+  position: fixed;
+  inset: 0;
+  z-index: 2147483645;
+  display: grid;
+  place-items: center;
+}
+
+#web-annotator-page-panel .wa-page-panel-card {
+  display: flex;
+  flex-direction: column;
+  width: min(980px, calc(100vw - 28px));
+  height: min(760px, calc(100vh - 72px));
+  border-radius: 16px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  background: #ffffff;
+  box-shadow: 0 24px 48px rgba(0, 0, 0, 0.18);
+  overflow: hidden;
+  animation: wa-page-panel-in 180ms ease;
+}
+
+/* 标题栏：给关闭按钮一个固定位置，不再挂在卡片外角被屏幕边缘裁掉 */
+#web-annotator-page-panel .wa-page-panel-head {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 36px;
+  padding: 0 6px 0 14px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.07);
+  background: #f7f8fa;
+}
+
+#web-annotator-page-panel .wa-page-panel-title {
+  font-size: 12.5px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: #4b5563;
+}
+
+#web-annotator-page-panel .wa-page-panel-close {
+  margin-left: auto;
+  width: 24px;
+  height: 24px;
+  border: 0;
+  border-radius: 7px;
+  background: transparent;
+  color: #6b7280;
+  font-size: 16px;
+  line-height: 1;
+  cursor: pointer;
+  transition: background 0.14s ease, color 0.14s ease;
+}
+
+#web-annotator-page-panel .wa-page-panel-close:hover {
+  background: rgba(0, 0, 0, 0.07);
+  color: #111827;
+}
+
+#web-annotator-page-panel .wa-page-panel-frame {
+  display: block;
+  flex: 1 1 auto;
+  min-height: 0;
+  width: 100%;
+  border: 0;
+  background: #fafafa;
+  overscroll-behavior: contain;
+}
+
+@keyframes wa-page-panel-in {
+  from { opacity: 0; transform: translateY(6px) scale(0.995); }
+  to { opacity: 1; transform: none; }
+}
+
+/* 让位时淡出而不是硬闪 */
+#web-annotator-rail { transition: opacity 0.16s ease; }
+
+/* 面板打开时悬浮栏让位：窄窗口下面板会压到它，留着反而挡内容。
+   两条写法并存：:has() 自清理（万一面板被站点整块替换也不会留下悬挂状态），
+   类名作兜底；分开写是为了老引擎里 :has() 失效时不影响类名那条。 */
+.wa-page-panel-open #web-annotator-rail {
+  opacity: 0;
+  pointer-events: none;
+}
+
+html:has(#web-annotator-page-panel) #web-annotator-rail {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.dark-theme #web-annotator-page-panel .wa-page-panel-card {
+  border-color: rgba(255, 255, 255, 0.1);
+  background: #14141e;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.55);
+}
+
+.dark-theme #web-annotator-page-panel .wa-page-panel-head {
+  border-bottom-color: rgba(255, 255, 255, 0.08);
+  background: #191b24;
+}
+
+.dark-theme #web-annotator-page-panel .wa-page-panel-title {
+  color: rgba(255, 255, 255, 0.62);
+}
+
+.dark-theme #web-annotator-page-panel .wa-page-panel-close {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.dark-theme #web-annotator-page-panel .wa-page-panel-close:hover {
+  background: rgba(255, 255, 255, 0.12);
+  color: #ffffff;
+}
+
+.dark-theme #web-annotator-page-panel .wa-page-panel-frame {
+  background: #14141e;
+}
+
+@media (max-width: 640px) {
+  #web-annotator-page-panel .wa-page-panel-card {
+    width: calc(100vw - 20px);
+    height: min(680px, calc(100vh - 44px));
+  }
+}
+
+/* ================================================================
    暗黑主题 (Dark Theme)
    通过在 html 或 body 上添加 .dark-theme 类来激活
    ================================================================ */
@@ -770,6 +938,21 @@
 
 .dark-theme #web-annotator-acts-node .wa-acts-sep {
   background: rgba(255, 255, 255, 0.1);
+}
+
+.dark-theme #web-annotator-acts-node button.wa-quick-tag {
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.66);
+}
+
+.dark-theme #web-annotator-acts-node button.wa-quick-tag:hover {
+  background: rgba(255, 255, 255, 0.16);
+  color: #fff;
+}
+
+.dark-theme #web-annotator-acts-node button.wa-quick-tag.active {
+  background: var(--wa-theme-accent, #2dd4bf);
+  color: var(--wa-theme-accent-text, #06302c);
 }
 
 .dark-theme #web-annotator-acts-node button {
@@ -920,8 +1103,8 @@
 }
 
 .dark-theme .wa-details-link a {
-  background: rgba(45, 212, 191, 0.15);
-  color: #2dd4bf;
+  background: color-mix(in srgb, var(--wa-theme-accent, #2dd4bf) 15%, transparent);
+  color: var(--wa-theme-accent, #2dd4bf);
 }
 
 .dark-theme #web-annotator-rail {
@@ -946,8 +1129,8 @@
 }
 
 .dark-theme #web-annotator-rail button[data-action="style"] {
-  background: var(--mark-color, #2dd4bf);
-  color: #000;
+  background: var(--wa-theme-accent, #2dd4bf);
+  color: var(--wa-theme-accent-text, #000);
 }
 
 .dark-theme #web-annotator-rail button[data-action="style"]:hover {
